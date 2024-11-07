@@ -1,0 +1,21 @@
+#tabular data reading
+!pip install tabula-py
+import tabula
+
+#data manipulation
+!pip install pandas
+import pandas as pd
+
+tables = tabula.read_pdf("ilovepdf_merged(1).pdf", pages='all', multiple_tables=True) #reads merged pdf files
+
+tables_df = pd.concat(tables) #concatenates the data
+
+#data cleaning
+cleaned_df = tables_df[['Data', 'Descrição', 'ID da operação', 'Valor', 'Saldo']].copy()
+cleaned_df.dropna(inplace=True)
+cleaned_df.drop_duplicates(inplace=True)
+cleaned_df['Data'] = pd.to_datetime(cleaned_df['Data'], format='%d-%m-%Y', errors='coerce')
+cleaned_df = cleaned_df.sort_values(by=['Data'])
+
+#export to csv
+cleaned_df.to_csv('mercadopagoTotal.csv', index=False)
